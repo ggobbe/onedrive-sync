@@ -27,8 +27,8 @@ func init() {
 }
 
 // SaveToken saves the token on the disk
-func SaveToken(tok *oauth2.Token) error {
-	content, err := json.Marshal(tok)
+func SaveToken(token *oauth2.Token) error {
+	content, err := json.Marshal(token)
 	if err != nil {
 		return err
 	}
@@ -38,6 +38,21 @@ func SaveToken(tok *oauth2.Token) error {
 	}
 	log.Printf("Saving token in %s\n", tokenFile)
 	return ioutil.WriteFile(tokenFile, content, 0644)
+}
+
+// ReadToken returns the token saved on the disk
+func ReadToken() (*oauth2.Token, error) {
+	tokenFile, err := getTokenPath()
+	if err != nil {
+		return nil, err
+	}
+	content, err := ioutil.ReadFile(tokenFile)
+	if err != nil {
+		return nil, err
+	}
+	var token *oauth2.Token
+	err = json.Unmarshal(content, &token)
+	return token, err
 }
 
 func getConfigPath() (string, error) {
@@ -66,7 +81,7 @@ func getUserHomeDir() (string, error) {
 
 func createIfNotExists(dir string) error {
 	exists, err := exists(dir)
-	if exists || err != nil {
+	if err != nil || exists {
 		return err
 	}
 	log.Printf("Creating folder %s\n", dir)

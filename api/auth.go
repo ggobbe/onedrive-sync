@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ggobbe/onedrive-sync/config"
 	"golang.org/x/oauth2"
@@ -19,11 +20,11 @@ var conf = &oauth2.Config{
 }
 
 func getClient() (*http.Client, error) {
-	tok, err := getToken()
+	token, err := getToken()
 	if err != nil {
 		return nil, err
 	}
-	return conf.Client(oauth2.NoContext, tok), nil
+	return conf.Client(oauth2.NoContext, token), nil
 }
 
 func askCode() (string, error) {
@@ -37,20 +38,19 @@ func askCode() (string, error) {
 	return code, nil
 }
 
-var token *oauth2.Token
-
 func getToken() (*oauth2.Token, error) {
-	if token != nil {
+	token, err := config.ReadToken()
+	if err == nil && token.Expiry.After(time.Now()) {
 		return token, nil
 	}
 	code, err := askCode()
 	if err != nil {
 		return nil, err
 	}
-	tok, err := conf.Exchange(oauth2.NoContext, code)
+	token, err = conf.Exchange(oauth2.NoContext, code)
 	if err != nil {
 		return nil, err
 	}
-	err = config.SaveToken(tok)
-	return tok, err
+	err = config.SaveToken(token)
+	return token, err
 }
