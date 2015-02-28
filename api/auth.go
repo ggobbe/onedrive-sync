@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ggobbe/onedrive-sync/config"
 	"golang.org/x/oauth2"
 )
 
@@ -47,5 +48,9 @@ func getToken() (*oauth2.Token, error) {
 		return nil, err
 	}
 	tok, err := conf.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		return nil, err
+	}
+	err = config.SaveToken(tok)
 	return tok, err
 }

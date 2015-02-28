@@ -24,5 +24,5 @@ func GetDriveInfos() string {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return fmt.Sprintf("Content Length: %d", resp.ContentLength)
+	return fmt.Sprintf("Status: %d-%s\n", resp.StatusCode, resp.Status)
 }
