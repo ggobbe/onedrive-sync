@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-const apiURL string = "https://api.onedrive.com/v1.0/"
+const apiURL string = "https://api.onedrive.com/v1.0"
 
 var client *http.Client
 
@@ -20,9 +20,11 @@ func init() {
 
 // GetDriveInfos return the content length of the /drive/ api entry point
 func GetDriveInfos() string {
-	resp, err := client.Get(fmt.Sprintf("%s/drive/", apiURL))
+	driveURI := fmt.Sprintf("%s/drive/", apiURL)
+	log.Printf("Request: %s\n", driveURI)
+	resp, err := client.Get(driveURI)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return fmt.Sprintf("Status: %d-%s\n", resp.StatusCode, resp.Status)
+	return fmt.Sprintf("Status: %s\nContentLength: %d", resp.Status, resp.ContentLength)
 }
