@@ -24,7 +24,7 @@ func GetDriveInfos() string {
 	log.Printf("Request: %s\n", driveURI)
 	resp, err := client.Get(driveURI)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	return fmt.Sprintf("Status: %s\nContentLength: %d", resp.Status, resp.ContentLength)
 }
