@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ggobbe/onedrive-sync/api"
@@ -9,8 +8,10 @@ import (
 
 func main() {
 	log.Println("Starting onesync")
-
-	fmt.Println(api.GetDriveInfos())
-
+	drive, err := api.GetDriveInfos()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Drive ID: %s\n", drive.ID)
 	log.Println("Finished")
 }
