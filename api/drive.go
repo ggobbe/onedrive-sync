@@ -2,13 +2,15 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-const apiURL string = "https://api.onedrive.com/v1.0"
+const (
+	driveAPI    = "/drive/"
+	rootAPI     = "/drive/root"
+	childrenAPI = "/drive/root/children"
+)
 
 var client *http.Client
 
@@ -20,61 +22,35 @@ func init() {
 	client = c
 }
 
-// Drive type
-type Drive struct {
-	DataContext string `json:"@odata.context"`
-	ID          string `json:"id"`
-	DriveType   string `json:"driveType"`
-	Owner       Owner  `json:"owner"`
-	Quota       Quota  `json:"quota"`
-}
-
-// Owner type
-type Owner struct {
-	User User `json:"user"`
-}
-
-// User type
-type User struct {
-	DisplayName string `json:"displayName"`
-	ID          string `json:"id"`
-}
-
-// Quota type
-type Quota struct {
-	Deleted   int    `json:"deleted"`
-	Remaining int    `json:"remaining"`
-	State     string `json:"state"`
-	Total     int    `json:"total"`
-	Used      int    `json:"used"`
-}
-
-// Error type
-type Error struct {
-	Code       string     `json:"code"`
-	Message    string     `json:"message"`
-	InnerError InnerError `json:"innererror"`
-}
-
-// InnerError type
-type InnerError struct {
-	Code string `json:"code"`
-}
-
-// GetDriveInfos return the drive information
-func GetDriveInfos() (*Drive, error) {
-	driveURI := fmt.Sprintf("%s/drive/", apiURL)
-	log.Printf("Request: %s\n", driveURI)
-	resp, err := client.Get(driveURI)
+// GetDrive return the drive information
+func GetDrive() (*Drive, error) {
+	body, err := doGetRequest(driveAPI)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
 	var data Drive
 	err = json.Unmarshal(body, &data)
+	return &data, err
+}
+
+// GetRoot gets the root folder for the user's default Drive
+func GetRoot() (Item, error) {
+	body, err := doGetRequest(rootAPI)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	return &data, nil
+	var data Item
+	err = json.Unmarshal(body, &data)
+	return data, err
+}
+
+// GetChildren List children under the Drive
+func GetChildren() (Children, error) {
+	body, err := doGetRequest(childrenAPI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var data Children
+	err = json.Unmarshal(body, &data)
+	return data, err
 }
