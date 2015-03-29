@@ -1,6 +1,6 @@
 **This is a work in progress, it is recommended not to use this tool with your OneDrive as it might result in unexpected results.**
 
-# onedrive-sync
+# onedrive-sync [![Build Status](https://travis-ci.org/ggobbe/onedrive-sync.svg?branch=master)](https://travis-ci.org/ggobbe/onedrive-sync)
 OneDrive-Sync has the goal to provide
 * a **Go library** wrapping the new [OneDrive API](http://onedrive.github.io/)
 * a **CLI** tool to push or pull documents/folders from and to OneDrive
